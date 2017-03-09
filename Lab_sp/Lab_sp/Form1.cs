@@ -14,6 +14,7 @@ using Emgu.CV.UI;
 using Emgu.Util;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
+using Emgu.CV.Util;
 
 namespace Lab_sp
 {
@@ -30,15 +31,19 @@ namespace Lab_sp
         private Capture capture = null;
 
         /// <summary>
-        /// Обновляет кадр в PictureBox
+        /// Получает массив байтов (каждый пиксель занимает 3 элемента, так как color = RGB)
+        /// пикселей входящих в облать заданного прямоугольника изображения
         /// </summary>
-        /// <param name="colorImage">Текущий кадр</param>
-        /// <param name="rectangles">Содержит все найденные рамки номеров</param>
-        private void RefreshFrame(Image<Bgr, Byte> colorImage, Rectangle[] rectangles)
+        /// <param name="image">изображение для получения данных</param>
+        /// <param name="rectangle">рассматриваемая область изображения</param>
+        /// <param name="size">размер для ресайза</param>
+        /// <returns></returns>
+        private byte[] GetData(Mat image, Rectangle rectangle, int size = 40)
         {
-            foreach (var rectangle in rectangles)
-                colorImage.Draw(rectangle, new Bgr(0, 255, 0), 1);
-            pictureBox.Image = colorImage.Bitmap;
+            Mat objectFromFrame = new Mat(image, rectangle);
+            Mat resizeObject = new Mat();
+            CvInvoke.Resize(objectFromFrame, resizeObject, new Size(size, size));
+            return resizeObject.GetData();
         }
 
         /// <summary>
@@ -63,8 +68,23 @@ namespace Lab_sp
                 if (image == null)
                     break;
 
-                Rectangle[] rectangles = Utils.HaarDetect(image);
-                RefreshFrame(image.ToImage<Bgr, Byte>(), rectangles);
+                VectorOfVectorOfPoint contours = ImageUtils.FindContours(image);
+                Image<Bgr, Byte> colorImage = image.ToImage<Bgr, Byte>();
+
+                for (int i = 0; i < contours.Size; i++)
+                {
+                    if (CvInvoke.ContourArea(contours[i]) > 50)
+                    {
+                        Rectangle rectangle = CvInvoke.MinAreaRect(contours[i]).MinAreaRect();
+                        try
+                        {
+                            byte[] imageInBytes = GetData(image, rectangle); //apply to the network
+                        }
+                        catch (CvException) { }
+                        CvInvoke.Rectangle(colorImage, rectangle, new MCvScalar(0, 255, 0), 2);
+                    }
+                }
+                lock (pictureBox) { pictureBox.Image = colorImage.Bitmap; }
             }
             MessageBox.Show("Видео закончилось");
         }

@@ -61,16 +61,6 @@ namespace Lab_sp.Properties {
         }
         
         /// <summary>
-        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap e8 {
-            get {
-                object obj = ResourceManager.GetObject("e8", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Resources\haar_plate_cascade.xml.
         /// </summary>
         internal static string haar_plate_cascade {
@@ -80,7 +70,7 @@ namespace Lab_sp.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Resources\Поток машин к аэродрому Вершина г. Россошь 13.08.2016.mp4.
+        ///   Ищет локализованную строку, похожую на Resources\videoplayback.mp4.
         /// </summary>
         internal static string video_path {
             get {
