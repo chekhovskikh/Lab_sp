@@ -72,5 +72,40 @@ namespace Lab_sp
             CvInvoke.FindContours(grayImage, contours, hierarchy, RetrType.List, ChainApproxMethod.ChainApproxSimple);
             return contours;
         }
+
+        //========================================================================================
+        // Отдел по экспериментальным функциями
+        //========================================================================================
+        /// <summary>
+        /// Преобразование цветного изображения в ч/б, которая получается сложением
+        /// монохромных изображений, в которых белый цвет соответствует R,G или B на цветной картинке
+        /// </summary>
+        /// <param name="img"></param>
+        /// <returns></returns>
+        public static Image<Gray, Byte> GetMonohromImage(Image<Bgr, Byte> img)
+        {
+            Image<Hsv, Byte> hsvImage = img.Convert<Hsv, Byte>();
+            //Определение красного
+            Image<Gray, Byte> red = hsvImage.InRange(new Hsv(0, 70, 0), new Hsv(10, 255, 255))//0-255
+                .Or(hsvImage.InRange(new Hsv(170, 70, 0), new Hsv(180, 255, 255)));//0-255
+            Image<Gray, Byte> yellow = hsvImage.InRange(new Hsv(20, 150, 170), new Hsv(30, 255, 255));//170-255
+            Image<Gray, Byte> blue = hsvImage.InRange(new Hsv(100, 120, 100), new Hsv(135, 255, 255));//100-255
+            Image<Gray, Byte> white = hsvImage.InRange(new Hsv(0, 0, 230), new Hsv(180, 30, 255));//
+            var resimg = yellow.Or(red).Or(blue);
+            //var resimg = white;
+            //var resimg = blue;
+            return resimg;
+        }
+
+        /// <summary>
+        /// Подсчитать отношение кол-ва белых пикселей к суммарному кол-ву пикселей изображения
+        /// </summary>
+        /// <param name="img"></param>
+        /// <returns></returns>
+        public static double GetPropBGR(Image<Gray, Byte> img)
+        {
+            var chan = img.CountNonzero();
+            return (double)chan[0] / (img.Width * img.Height);
+        }
     }
 }
