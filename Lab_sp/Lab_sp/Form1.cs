@@ -25,7 +25,7 @@ namespace Lab_sp
     {
         private Net net;
         private TrainerBase trainer;
-        private Bitmap[][] exemples;
+        private Bitmap[][] trainingExamples;
 
         private Size sizeImage;
 
@@ -70,6 +70,19 @@ namespace Lab_sp
         private byte[] GetData(Bitmap bmp, Rectangle rect)
         {
             return new Image<Bgr, Byte>(bmp).Mat.GetData();
+        }
+
+        /// <summary>
+        /// Перевод массива byte[] -> double[]
+        /// </summary>
+        /// <param name="bytes">Массив для конвектирования</param>
+        /// <returns>Конвектированный массив</returns>
+        static double[] ConvectToDoubles(byte[] bytes)
+        {
+            var doubles = new double[bytes.Length];
+            for (int i = 0; i < doubles.Length; i++)
+                doubles[i] = bytes[i];
+            return doubles;
         }
 
 
@@ -128,10 +141,10 @@ namespace Lab_sp
                 //                                                  0.2f, 3f, 0.2f }, { -0.1f, 0.2f, -0.1f } });
                 //CvInvoke.Filter2D(image.ToImage<Bgr, Byte>().Copy(), image, kernel1, archor);
 
-                VectorOfVectorOfPoint contours = ImageUtils.FindContours(image);
+                VectorOfVectorOfPoint contours = image.FindContours();
                 Image<Bgr, Byte> colorImage = image.ToImage<Bgr, Byte>();
                 Image<Bgr, Byte> colorImageCopy = colorImage.Copy();
-                Image<Gray, Byte> grayImage = ImageUtils.GetMonohromImage(colorImage);
+                Image<Gray, Byte> grayImage = colorImage.GetMonohromImage();
                 //Эррозия
                 //Уберем шумы на ч/б изображении
                 CvInvoke.GaussianBlur(grayImage, grayImage, new Size(13, 13), 6);
@@ -153,11 +166,11 @@ namespace Lab_sp
                         CvInvoke.DrawContours(colorImage, contours, i, new MCvScalar(255, 0, 0), 1);
                         //im - бинарное изображение, белый цвет - соответствует красному, синему и желтому цветам на цветном кадре
                         //Проверка на процентное содержание этих 3-х цветов в распознаваемом фрагменте (от 0 до 1)
-                        if (im != null && ImageUtils.GetPropBGR(im) >= 0.15)
+                        if (im != null && ImageExtention.GetPropBGR(im) >= 0.15)
                             try
                             {
                                 var data = GetData(image, rectangle, sizeImage.Width);
-                                var classImage = Def(GetDoubles(data));
+                                var classImage = Def(ConvectToDoubles(data));
                                 if (classImage[1] >= 0.7)
                                 {
                                     CvInvoke.DrawContours(colorImage, contours, i, new MCvScalar(255, 0, 0));
@@ -214,7 +227,6 @@ namespace Lab_sp
                 {
                     Learning("C:\\Programing\\СисПр\\Lab_sp\\Examples\\Class" + (i + 1), 48, i, trainer, 1);
                 }
-
         }
 
         private double[] Def(double[] image)
@@ -257,7 +269,7 @@ namespace Lab_sp
                         Bitmap bmp = null;
                         bmp = sources[j][k];
                         var rectA = new Rectangle(0, 0, bmp.Width, bmp.Height);
-                        var x = new Volume(GetDoubles(GetData(bmp, rectA)));
+                        var x = new Volume(ConvectToDoubles(GetData(bmp, rectA)));
                         //var prob = net.Forward(x);
                         //for (int r = 0; r < prob.Length; r++)
                         //    Print("Probability that x is class " + r + ": " + prob.Get(r));
@@ -284,10 +296,10 @@ namespace Lab_sp
                     pictureBox.Image = bmp;
                     if (size != bmp.Width || size != bmp.Height)
                     {
-                        bmp = ScaleImage(bmp, size, size);
+                        bmp = bmp.Resize(size, size);
                     }
                     Rectangle rect = new Rectangle(0, 0, size, size);
-                    var data = GetDoubles(GetData(bmp, rect));
+                    var data = ConvectToDoubles(GetData(bmp, rect));
                     var x = new Volume(data);
                     var prob = net.Forward(x);
                     for (int r = 0; r < prob.Length; r++)
@@ -295,14 +307,6 @@ namespace Lab_sp
                     trainer.Train(x, classImage);
                 }
             }
-        }
-
-
-
-        private static Bitmap ScaleImage(Bitmap source, int width, int height)
-        {
-            Image<Bgr, Byte> captureImage = new Image<Bgr, byte>(source);
-            return captureImage.Resize(width, height, Inter.Linear).ToBitmap();
         }
 
         private void Print(String text)
@@ -326,16 +330,16 @@ namespace Lab_sp
                 var bmp = new Bitmap(Image.FromStream(stream));
                 var rectA = new Rectangle(0, 0, bmp.Width, bmp.Height);
                 if (rectA.Width != sizeImage.Width || sizeImage.Height != sizeImage.Height)
-                    bmp = ScaleImage(bmp, sizeImage.Width, sizeImage.Height);
-                Image<Bgr, Byte> img = new Image<Bgr, byte>(bmp);
-                var img2 = ImageUtils.GetMonohromImage(img);
+                    bmp = bmp.Resize(sizeImage.Width, sizeImage.Height);
+                //Image<Bgr, Byte> img = new Image<Bgr, byte>(bmp);
+                var img2 = new Image<Bgr, byte>(bmp).GetMonohromImage();
                 pictureBox.Image = img2.Bitmap;
                 var data = GetData(bmp, new Rectangle(0,0,bmp.Width,bmp.Height));
-                var colorInfo = ImageUtils.GetPropBGR(img2);
+                var colorInfo = ImageExtention.GetPropBGR(img2);
                 var countPix = img2.Width * img2.Height;
                 Print("файл загружен! Анализ...");
                 Print("Всего ярковыраженых пикселей: " + colorInfo*countPix + " из " + countPix + " (" + (colorInfo*100) +"%)");
-                var res = Def(GetDoubles(data));
+                var res = Def(ConvectToDoubles(data));
                 String info = "This is ";
                 if (colorInfo >= 0.15)
                     info += "class: " + res[0] + " with a chance: " + res[1];
@@ -361,53 +365,8 @@ namespace Lab_sp
             net.AddLayer(new FullyConnLayer(4));
             net.AddLayer(new SoftmaxLayer(4));
 
-            //sizeImage = new Size(48, 48);
-            //net = new Net();
-            //net.AddLayer(new InputLayer(48,
-            //    48, 3));
-            //net.AddLayer(new ConvLayer(32, 32, 16));//7,7,24
-            //net.AddLayer(new ReluLayer());
-            //net.AddLayer(new ConvLayer(24, 24, 8));//5,5,30
-            //net.AddLayer(new ReluLayer());
-            //net.AddLayer(new PoolLayer(2, 2));
-            //net.AddLayer(new ReluLayer());
-            //net.AddLayer(new ConvLayer(12, 12, 8));// 5,5,30
-            //net.AddLayer(new ReluLayer());
-            //net.AddLayer(new PoolLayer(3, 3));
-            //net.AddLayer(new FullyConnLayer(4));
-            //net.AddLayer(new SoftmaxLayer(4));
-
-            // FluentNet net = FluentNet.Create(48, 48, 3)
-            //.Conv(7, 7, 24).Stride(1).Pad(3)
-            //.Relu()
-            //.Pool(2, 2).Stride(2)
-            //.Conv(5, 5, 30).Stride(1).Pad(2)
-            //.Relu()
-            //.Pool(2, 2).Stride(2)
-            //.Conv(5, 5, 30).Stride(1).Pad(2)
-            //.Relu()
-            //.Pool(3, 3).Stride(2)
-            //.FullyConn(4)
-            //.Softmax(4)
-            //.Build();
-
             //Формируем эталоны для обучения
             trainer = new SgdTrainer(net) { LearningRate = 0.01, L2Decay = 0.001 };
-        }
-
-        /// <summary>
-        /// Перевод массива byte[] -> double[]
-        /// </summary>
-        /// <param name="bytes"></param>
-        /// <returns></returns>
-        static double[] GetDoubles(byte[] bytes)
-        {
-            var doubles = new double[bytes.Length];
-            for (int i = 0; i < doubles.Length; i++)
-                doubles[i] = bytes[i];
-            return doubles;
-        }
-
-        
+        }      
     }
 }

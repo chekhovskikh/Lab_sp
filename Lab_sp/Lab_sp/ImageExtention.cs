@@ -13,16 +13,17 @@ using Emgu.CV.Util;
 
 namespace Lab_sp
 {
-    class ImageUtils
+    /// <summary>
+    /// Класс, расширяющий возможности работы с изображениями
+    /// </summary>
+    public static class ImageExtention
     {
-        private ImageUtils() { }
-
         /// <summary>
         /// Гауссовское размытие
         /// </summary>
         /// <param name="grayImage">Изображение для размытия</param>
         /// <param name="sigmaX">Стандартное отклонение</param>
-        public static void GaussianBlur(Image<Gray, Byte> grayImage, double sigmaX = 2)
+        public static void GaussianBlur(this Image<Gray, Byte> grayImage, double sigmaX = 2)
         {
             Image<Gray, Byte> blurImage = new Image<Gray, Byte>(grayImage.Width, grayImage.Height);
             CvInvoke.GaussianBlur(grayImage, blurImage, new Size(13, 13), sigmaX);
@@ -35,7 +36,7 @@ namespace Lab_sp
         /// <param name="grayImage">Изображения для обработки</param>
         /// <param name="threshold">Порог</param>
         /// <param name="maxValue">Максимальное значение</param>
-        public static void Threshold(Image<Gray, Byte> grayImage, double threshold = 127, double maxValue = 255)
+        public static void Threshold(this Image<Gray, Byte> grayImage, double threshold = 127, double maxValue = 255)
         {
             Image<Gray, Byte> thrImage = new Image<Gray, Byte>(grayImage.Width, grayImage.Height);
             CvInvoke.Threshold(grayImage, thrImage, threshold, maxValue, ThresholdType.Binary);
@@ -48,7 +49,7 @@ namespace Lab_sp
         /// <param name="binaryImage">Изображение для обработки</param>
         /// <param name="threshold1">Первый порог</param>
         /// <param name="threshold2">Второй порог</param>
-        public static void Canny(Image<Gray, Byte> binaryImage, double threshold1 = 127, double threshold2 = 255)
+        public static void Canny(this Image<Gray, Byte> binaryImage, double threshold1 = 127, double threshold2 = 255)
         {
             Image<Gray, Byte> cannyImage = new Image<Gray, Byte>(binaryImage.Width, binaryImage.Height);
             CvInvoke.Canny(binaryImage, cannyImage, threshold1, threshold2);
@@ -60,7 +61,7 @@ namespace Lab_sp
         /// </summary>
         /// <param name="image">Изображения, у которого требуется найти контуры</param>
         /// <returns>Список контуров</returns>
-        public static VectorOfVectorOfPoint FindContours(Mat image)
+        public static VectorOfVectorOfPoint FindContours(this Mat image)
         {
             Image<Gray, Byte> grayImage = image.ToImage<Gray, Byte>();
             GaussianBlur(grayImage);
@@ -73,6 +74,38 @@ namespace Lab_sp
             return contours;
         }
 
+        /// <summary>
+        /// Изменяет размер изображения
+        /// </summary>
+        /// <param name="source">Изображение, размеры которого требуется изменить</param>
+        /// <param name="width">Ширина требуемого изображения</param>
+        /// <param name="height">Высота требуемого изображения</param>
+        /// <returns>Изображение с измененным размером</returns>
+        public static Bitmap Resize(this Bitmap source, int width, int height)
+        {
+            Image<Bgr, Byte> captureImage = new Image<Bgr, byte>(source);
+            return captureImage.Resize(width, height, Inter.Linear).ToBitmap();
+        }
+
+        /// <summary>
+        /// Представление цвета одним числом
+        /// </summary>
+        /// <param name="red">Красный</param>
+        /// <param name="green">Зеленый</param>
+        /// <param name="blue">Синий</param>
+        /// <returns>Цвет представленный одним числом</returns>
+        public static double ToRGB(byte red, byte green, byte blue)
+        {
+            return (red << 16) | (green << 8) | blue;
+        }
+
+        #region На правах рекламы. Chekhovskikh (с)
+        //+===================================+
+        //| ЗДЕСЬ МОГЛА БЫТЬ ВАША РЕКЛАМА.    |
+        //|          +79277457895             |
+        //+===================================+
+        #endregion
+
         //========================================================================================
         // Отдел по экспериментальным функциями
         //========================================================================================
@@ -82,7 +115,7 @@ namespace Lab_sp
         /// </summary>
         /// <param name="img"></param>
         /// <returns></returns>
-        public static Image<Gray, Byte> GetMonohromImage(Image<Bgr, Byte> img)
+        public static Image<Gray, Byte> GetMonohromImage(this Image<Bgr, Byte> img)
         {
             Image<Hsv, Byte> hsvImage = img.Convert<Hsv, Byte>();
             //Определение красного
@@ -91,10 +124,10 @@ namespace Lab_sp
             Image<Gray, Byte> yellow = hsvImage.InRange(new Hsv(20, 150, 170), new Hsv(30, 255, 255));//170-255
             Image<Gray, Byte> blue = hsvImage.InRange(new Hsv(100, 120, 100), new Hsv(135, 255, 255));//100-255
             Image<Gray, Byte> white = hsvImage.InRange(new Hsv(0, 0, 230), new Hsv(180, 30, 255));//
-            var resimg = yellow.Or(red).Or(blue);
+            //var resing  = yellow.Or(red).Or(blue);
             //var resimg = white;
             //var resimg = blue;
-            return resimg;
+            return yellow.Or(red).Or(blue);
         }
 
         /// <summary>
