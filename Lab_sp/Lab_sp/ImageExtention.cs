@@ -88,6 +88,34 @@ namespace Lab_sp
         }
 
         /// <summary>
+        /// Создание битмапа с ресайзом
+        /// </summary>
+        /// <param name="path">Путь к изображению</param>
+        /// <param name="size">Размер выходного файла</param>
+        /// <returns>Изображение с заданным размером</returns>
+        public static Bitmap CreateBitmap(string path, int size)
+        {
+            Bitmap bmp = new Bitmap(Image.FromFile(path));
+            if (bmp.Height != size || bmp.Width != size)
+                bmp = bmp.Resize(size, size);
+            return bmp;
+        }
+
+        /// <summary>
+        /// Перегрузка функции - на входе Bitmap, а не Mat
+        /// Получает массив байтов (каждый пиксель занимает 3 элемента, так как color = RGB)
+        /// пикселей входящих в облать заданного прямоугольника изображения
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="rectangle"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public static byte[] GetData(this Bitmap bmp)
+        {
+            return new Image<Bgr, Byte>(bmp).Mat.GetData();
+        }
+
+        /// <summary>
         /// Представление цвета одним числом
         /// </summary>
         /// <param name="red">Красный</param>

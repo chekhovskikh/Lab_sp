@@ -18,23 +18,24 @@ using Emgu.CV.Util;
 using ConvNetSharp;
 using ConvNetSharp.Layers;
 using ConvNetSharp.Training;
+using Recognition.NeuralNet;
 
 namespace Lab_sp
 {
-    public partial class Form1 : Form
+    public partial class Main : Form
     {
-        private Net net;
-        private TrainerBase trainer;
-        private Bitmap[][] trainingExamples;
+        private Network net;
+        private List<TrainingImage> trainingExamples;
 
-        private Size sizeImage;
+        private int size = 48;
 
         /// <summary>
         /// Пусть будет - это конструктор
         /// </summary>
-        public Form1()
+        public Main()
         {
             InitializeComponent();
+            net = new Network(size, size, 4);
         }
 
         /// <summary>
@@ -50,26 +51,12 @@ namespace Lab_sp
         /// <param name="rectangle">рассматриваемая область изображения</param>
         /// <param name="size">размер для ресайза</param>
         /// <returns></returns>
-        private byte[] GetData(Mat image, Rectangle rectangle, int size = 48)
+        private byte[] GetData(Mat image, Rectangle rectangle, int size)
         {
             Mat objectFromFrame = new Mat(image, rectangle);
             Mat resizeObject = new Mat();
             CvInvoke.Resize(objectFromFrame, resizeObject, new Size(size, size));
             return resizeObject.GetData();
-        }
-
-        /// <summary>
-        /// Перегрузка функции - на входе Bitmap, а не Mat
-        /// Получает массив байтов (каждый пиксель занимает 3 элемента, так как color = RGB)
-        /// пикселей входящих в облать заданного прямоугольника изображения
-        /// </summary>
-        /// <param name="image"></param>
-        /// <param name="rectangle"></param>
-        /// <param name="size"></param>
-        /// <returns></returns>
-        private byte[] GetData(Bitmap bmp, Rectangle rect)
-        {
-            return new Image<Bgr, Byte>(bmp).Mat.GetData();
         }
 
         /// <summary>
@@ -91,11 +78,10 @@ namespace Lab_sp
             return doubles;
         }
 
-
         /// <summary>
         /// Запускает видео
         /// </summary>
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonGo_Click(object sender, EventArgs e)
         {
             Clear();
             capture = new Capture(Properties.Resources.video_path);
@@ -160,23 +146,23 @@ namespace Lab_sp
                     if (CvInvoke.ContourArea(contours[i]) > 200)
                     {
                         Rectangle rectangle = CvInvoke.MinAreaRect(contours[i]).MinAreaRect();
-                        Image<Gray, Byte> im = null;
+                        Image<Gray, Byte> binaryImage = null;
                         try
                         {
                             CvInvoke.cvSetImageROI(grayImage, rectangle);
-                            im = grayImage.Copy();
+                            binaryImage = grayImage.Copy();
                             CvInvoke.cvResetImageROI(grayImage);//.ROI = new Rectangle(0, 0, grayImage.Width, grayImage.Height);
                         }
                         catch (CvException) { }
                         CvInvoke.DrawContours(colorImage, contours, i, new MCvScalar(255, 0, 0), 1);
-                        //im - бинарное изображение, белый цвет - соответствует красному, синему и желтому цветам на цветном кадре
+                        //binaryImage - бинарное изображение, белый цвет - соответствует красному, синему и желтому цветам на цветном кадре
                         //Проверка на процентное содержание этих 3-х цветов в распознаваемом фрагменте (от 0 до 1)
-                        if (im != null && ImageExtention.GetPropBGR(im) >= 0.15)
+                        if (binaryImage != null && ImageExtention.GetPropBGR(binaryImage) >= 0.15)
                             try
                             {
-                                var data = GetData(image, rectangle, sizeImage.Width);
-                                var classImage = Def(ConvectToDoubles(data));
-                                if (classImage[1] >= 0.7)
+                                var data = GetData(image, rectangle, size);
+                                var classImage = Calculate(ConvectToDoubles(data));
+                                if (classImage[1] >= 0d)
                                 {
                                     CvInvoke.DrawContours(colorImage, contours, i, new MCvScalar(255, 0, 0));
                                     CvInvoke.Rectangle(colorImage, rectangle, new MCvScalar(0, 255, 0), 2);
@@ -193,7 +179,7 @@ namespace Lab_sp
         }
 
 
-        private void button2_Click(object sender, EventArgs e)
+        private void buttonLearning_Click(object sender, EventArgs e)
         {
             // species a 2-layer neural network with one hidden layer of 20 neurons
             //if (net == null)
@@ -227,151 +213,123 @@ namespace Lab_sp
             //i - число классов
             //j - число итераций обучения
             //Временная мера - тестирование
-            for (int j = 0; j < 10; j++)
-                for (int i = 0; i < 4; i++)
-                {
-                    Learning("C:\\Programing\\СисПр\\Lab_sp\\Examples\\Class" + (i + 1), 48, i, trainer, 1);
-                }
+
+            int countTypes = 4;
+            if (trainingExamples == null)
+                LoadTrainingExamples(size, countTypes);
+
+            Learning(10);
         }
 
-        private double[] Def(double[] image)
+        /// <summary>
+        /// Обучение нейронной сети
+        /// </summary>
+        /// <param name="count">Количество циклов обучения</param>
+        public void Learning(int count)
         {
-            var x = new Volume(image);
-            var prob = net.Forward(x);
-            try
+            for (int k = 0; k < count; k++)
+                for (int i = 0; i < trainingExamples.Count; i++)
+                    net.Train(trainingExamples[i].Input, trainingExamples[i].DesiredOutput());
+        }
+
+        /// <summary>
+        /// Заполняет тренировочную базу
+        /// </summary>
+        /// <param name="size">Размер тренировочных изображений</param>
+        /// <param name="countType">Количество классов</param>
+        private void LoadTrainingExamples(int size, int countType)
+        {
+            trainingExamples = new List<TrainingImage>();
+            for (int folderIndex = 0; folderIndex < countType; folderIndex++)
             {
-                for (int i = 0; i < prob.Length; i++)
-                    Print("probability that x is class " + i + ": " + prob.Get(i));
-                Print("==================================================: ");
-            }
-            catch { }
-            if (prob.Length == 0)
-                return null;
-            double max = prob.Get(0);
-            int max_i = 0;
-            for (int i = 1; i < prob.Length; i++)
-                if (max < prob.Get(i))
+                string[] pathToFiles = Directory.GetFiles(@"Resources\Class" + (folderIndex + 1));
+
+                for (int indexFile = 0; indexFile < pathToFiles.Length; indexFile++)
                 {
-                    max = prob.Get(i);
+                    Bitmap bmp = ImageExtention.CreateBitmap(pathToFiles[indexFile], size);
+                    trainingExamples.Add(new TrainingImage(ConvectToDoubles(bmp.GetData()), folderIndex, countType));
+                }
+            }
+            Shuffle(trainingExamples);
+        }
+
+        /// <summary>
+        /// Перемешивает элементы массива случайным образом.
+        /// Алгоритм перемешивания Fisher–Yates shuffle:
+        /// http://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm
+        /// </summary>
+        /// <typeparam name="T">Тип элементов массива</typeparam>
+        /// <param name="array">Массив для перемешивания</param>
+        public void Shuffle<T>(List<T> array)
+        {
+            Random rnd = new Random();
+            for (int i = array.Count - 1; i > 0; i--)
+            {
+                int j = rnd.Next(i + 1);
+                var buffer = array[i];
+                array[i] = array[j];
+                array[j] = buffer;
+            }
+        }
+
+        /// <summary>
+        /// Определяет возможность принадлежность к классу изображений
+        /// </summary>
+        /// <param name="image">Изображения для проверки</param>
+        /// <returns>Класс с максимальной возможностью и его вес</returns>
+        private double[] Calculate(double[] image)
+        {
+            double[] output = net.Calculate(image);
+
+            /*for (int i = 0; i < output.Length; i++)
+                Print("probability that x is class " + i + ": " + output[i]);
+            Print("==================================================: ");*/
+
+            double max = output[0];
+            int max_i = 0;
+            for (int i = 1; i < output.Length; i++)
+                if (max < output[i])
+                {
+                    max = output[i];
                     max_i = i;
                 }
             return new double[] { max_i, max };
         }
 
-        public void Learning(Bitmap[][] sources, int[] classes, TrainerBase trainer, int iters)
-        {
-            if (sources.Length != classes.Length || sources.Length == 0)
-                return;
-
-            var gu = GraphicsUnit.Pixel;
-            for (int i = 0; i < iters; i++)
-            {
-                Print(i + "=================");
-                for (int j = 0; j < sources.Length; j++)
-                {
-                    for (int k = 0; k < sources[0].Length; k++)
-                    {
-                        Bitmap bmp = null;
-                        bmp = sources[j][k];
-                        var rectA = new Rectangle(0, 0, bmp.Width, bmp.Height);
-                        var x = new Volume(ConvectToDoubles(GetData(bmp, rectA)));
-                        //var prob = net.Forward(x);
-                        //for (int r = 0; r < prob.Length; r++)
-                        //    Print("Probability that x is class " + r + ": " + prob.Get(r));
-                        trainer.Train(x, classes[j]);
-                    }
-                }
-            }
-        }
-
-        public void Learning(String pathDir, int size, int classImage, TrainerBase trainer, int iters = 1)
-        {
-            var pathToFiles = Directory.GetFiles(pathDir);
-            var gu = GraphicsUnit.Pixel;
-            var bmps = new Bitmap[pathToFiles.Length];
-            for (int j = 0; j < bmps.Length; j++)
-                bmps[j] = new Bitmap(Image.FromFile(pathToFiles[j]));
-
-            for (int i = 0; i < iters; i++)
-            {
-                Print(i + "=================");
-                for (int j = 0; j < pathToFiles.Length; j++)
-                {
-                    Bitmap bmp = bmps[j];
-                    pictureBox.Image = bmp;
-                    if (size != bmp.Width || size != bmp.Height)
-                    {
-                        bmp = bmp.Resize(size, size);
-                    }
-                    Rectangle rect = new Rectangle(0, 0, size, size);
-                    var data = ConvectToDoubles(GetData(bmp, rect));
-                    var x = new Volume(data);
-                    var prob = net.Forward(x);
-                    for (int r = 0; r < prob.Length; r++)
-                        Print("Probability that x is class " + r + ": " + prob.Get(r));
-                    trainer.Train(x, classImage);
-                }
-            }
-        }
-        
         private void Print(string text)
         {
-            textBox1.Text = text + Environment.NewLine + textBox1.Text;
+            infoBox.Text = text + Environment.NewLine + infoBox.Text;
         }
 
         private void Clear()
         {
-            textBox1.Text = "";
+            infoBox.Text = "";
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void buttonOpenImage_Click(object sender, EventArgs e)
         {
-            var resdial = openFileDialog1.ShowDialog();
-            if (resdial == DialogResult.Cancel)
+            if (openFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-            var stream = openFileDialog1.OpenFile();
-            if (stream != null)
-            {
-                var bmp = new Bitmap(Image.FromStream(stream));
-                var rectA = new Rectangle(0, 0, bmp.Width, bmp.Height);
-                if (rectA.Width != sizeImage.Width || sizeImage.Height != sizeImage.Height)
-                    bmp = bmp.Resize(sizeImage.Width, sizeImage.Height);
-                //Image<Bgr, Byte> img = new Image<Bgr, byte>(bmp);
-                var img2 = new Image<Bgr, byte>(bmp).GetMonohromImage();
-                pictureBox.Image = img2.Bitmap;
-                var data = GetData(bmp, new Rectangle(0,0,bmp.Width,bmp.Height));
-                var colorInfo = ImageExtention.GetPropBGR(img2);
-                var countPix = img2.Width * img2.Height;
-                Print("файл загружен! Анализ...");
-                Print("Всего ярковыраженых пикселей: " + colorInfo*countPix + " из " + countPix + " (" + (colorInfo*100) +"%)");
-                var res = Def(ConvectToDoubles(data));
-                String info = "This is ";
-                if (colorInfo >= 0.15)
-                    info += "class: " + res[0] + " with a chance: " + res[1];
-                else
-                    info += "a void";
-                Print(info);
-                Print("==========================");
 
-            }
+            Bitmap bmp = ImageExtention.CreateBitmap(openFileDialog.FileName, size);
+            var img = new Image<Bgr, byte>(bmp).GetMonohromImage();
+
+            pictureBox.Image = img.Bitmap;
+            byte[] data = bmp.GetData();
+            double colorInfo = ImageExtention.GetPropBGR(img);
+            int countPix = img.Width * img.Height;
+
+            Print("файл загружен! Анализ...");
+            Print("Всего ярковыраженых пикселей: " + colorInfo * countPix + " из " + countPix + " (" + (colorInfo * 100) + "%)");
+
+            double[] result = Calculate(ConvectToDoubles(data));
+            string info = "This is ";
+            if (colorInfo >= 0.15)
+                info += "class: " + result[0] + " with a chance: " + result[1];
+            else
+                info += "a void";
+            Print(info);
+            Print("==========================");
         }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            
-            sizeImage = new Size(48, 48);
-            net = new Net();
-            net.AddLayer(new InputLayer(Properties.Resources.a1_48x48.Width,
-                Properties.Resources.a1_48x48.Height, 1));
-            net.AddLayer(new FullyConnLayer(32));//32
-            net.AddLayer(new TanhLayer());
-            net.AddLayer(new FullyConnLayer(16));//16
-            net.AddLayer(new TanhLayer());
-            net.AddLayer(new FullyConnLayer(4));
-            net.AddLayer(new SoftmaxLayer(4));
-
-            //Формируем эталоны для обучения
-            trainer = new SgdTrainer(net) { LearningRate = 0.01, L2Decay = 0.001 };
-        }      
     }
 }
