@@ -73,15 +73,21 @@ namespace Lab_sp
         }
 
         /// <summary>
-        /// Перевод массива byte[] -> double[]
+        /// Перевод массива byte[] -> double[] с преобразованием 
+        /// представления цвета одним числом
         /// </summary>
         /// <param name="bytes">Массив для конвектирования</param>
         /// <returns>Конвектированный массив</returns>
         static double[] ConvectToDoubles(byte[] bytes)
         {
-            var doubles = new double[bytes.Length];
+            double[] doubles = new double[bytes.Length / 3];
             for (int i = 0; i < doubles.Length; i++)
-                doubles[i] = bytes[i];
+            {
+                byte red = bytes[3 * i + 1];
+                byte green = bytes[3 * i + 2];
+                byte blue = bytes[3 * i];
+                doubles[i] = ImageExtention.ToRGB(red, green, blue);
+            }
             return doubles;
         }
 
@@ -102,8 +108,8 @@ namespace Lab_sp
             }
         }
 
-        private Boolean isPlay;
-        private Boolean stopFrame = true;
+        private bool isPlay;
+        private bool stopFrame = true;
         private Mat lastImage;
         /// <summary>
         /// Покадрово обновляет PictureBox, 
@@ -113,7 +119,6 @@ namespace Lab_sp
         {
             while (true)
             {
-
                 Mat image = null;
                 if (!stopFrame)
                 {
@@ -308,8 +313,8 @@ namespace Lab_sp
                 }
             }
         }
-
-        private void Print(String text)
+        
+        private void Print(string text)
         {
             textBox1.Text = text + Environment.NewLine + textBox1.Text;
         }
@@ -357,7 +362,7 @@ namespace Lab_sp
             sizeImage = new Size(48, 48);
             net = new Net();
             net.AddLayer(new InputLayer(Properties.Resources.a1_48x48.Width,
-                Properties.Resources.a1_48x48.Height, 3));
+                Properties.Resources.a1_48x48.Height, 1));
             net.AddLayer(new FullyConnLayer(32));//32
             net.AddLayer(new TanhLayer());
             net.AddLayer(new FullyConnLayer(16));//16
