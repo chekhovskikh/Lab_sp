@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Lab_sp.View.Forms;
+using Lab_sp.Core;
 
 namespace Lab_sp
 {
@@ -16,6 +18,10 @@ namespace Lab_sp
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            new SplashScreen().ShowDialog();
+            Settings.Instance.Role = Settings.UserRole.Admin;
+            //if (new Auth().ShowDialog() == DialogResult.OK)
             Application.Run(new Main());
         }
     }

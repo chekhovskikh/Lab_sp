@@ -39,6 +39,7 @@ namespace Lab_sp
             Input = data;
             CountTypes = countTypes;
             Type = type;
+            SetOutput();
         }
 
         public int Type
@@ -52,20 +53,19 @@ namespace Lab_sp
             }
         }
 
-        /// <summary>
-        /// Содает массив для обучения и сохраняет в переменной desiredOutput,
-        /// чтобы при повторном обращении не пришлось пересчитывать
-        /// </summary>
-        /// <returns>Желаемый выходной вектор сети</returns>
-        public double[] DesiredOutput()
+        public double[] DesiredOutput
         {
-            if (desiredOutput == null)
-            {
-                desiredOutput = new double[CountTypes];
-                for (int i = 0; i < desiredOutput.Length; i++)
-                    desiredOutput[i] = (i == type) ? 1 : -1;
-            }
-            return desiredOutput;
+            get { return desiredOutput; }
+        }
+
+        /// <summary>
+        /// Создает желаемый выходной вектор
+        /// </summary>
+        private void SetOutput()
+        {
+            desiredOutput = new double[CountTypes];
+            for (int i = 0; i < desiredOutput.Length; i++)
+                desiredOutput[i] = (i == type) ? 1 : -1;
         }
     }
 }

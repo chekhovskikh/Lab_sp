@@ -15,19 +15,21 @@ using Emgu.Util;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
-using ConvNetSharp;
-using ConvNetSharp.Layers;
-using ConvNetSharp.Training;
 using Recognition.NeuralNet;
+using Lab_sp.Core;
+using Lab_sp.View.Forms;
+using Lab_sp.Entities;
+using System.Data.Entity;
 
 namespace Lab_sp
 {
     public partial class Main : Form
     {
-        private Network net;
-        private List<TrainingImage> trainingExamples;
+        private Network net;   
 
-        private int size = 48;
+        private bool isPlay;
+        private bool stopFrame = true;
+        private Mat lastImage;
 
         /// <summary>
         /// Пусть будет - это конструктор
@@ -35,7 +37,39 @@ namespace Lab_sp
         public Main()
         {
             InitializeComponent();
-            net = new Network(size, size, 4);
+            SelectFormAccordingToLevelAccess();
+            //net = new Network(size, size, 4);
+            net = Settings.Instance.Network;
+            //Settings.Instance.Network = net;
+        }
+
+        /// <summary>
+        /// Изменить визуальное представление формы соответственно уровню доступа пользователя
+        /// </summary>
+        private void SelectFormAccordingToLevelAccess()
+        {
+            switch (Settings.Instance.Role)
+            {
+                case Settings.UserRole.Admin:
+                    Text += " (Администратор)";
+                    break;
+                default:
+                    //Сокрытие управления
+                    if(menuStrip1.Items.ContainsKey("управлениеToolStripMenuItem"))
+                    {
+                        var item = menuStrip1.Items[menuStrip1.Items.IndexOfKey("управлениеToolStripMenuItem")];
+                        item.Enabled = false;
+                        item.Visible = false;
+                    }
+                    if (menuStrip1.Items.ContainsKey("справочникToolStripMenuItem"))
+                    {
+                        var item = menuStrip1.Items[menuStrip1.Items.IndexOfKey("справочникToolStripMenuItem")];
+                        item.Enabled = false;
+                        item.Visible = false;
+                    }
+                    Text += " (Пользователь)";
+                    break;
+            }
         }
 
         /// <summary>
@@ -60,25 +94,6 @@ namespace Lab_sp
         }
 
         /// <summary>
-        /// Перевод массива byte[] -> double[] с преобразованием 
-        /// представления цвета одним числом
-        /// </summary>
-        /// <param name="bytes">Массив для конвектирования</param>
-        /// <returns>Конвектированный массив</returns>
-        static double[] ConvectToDoubles(byte[] bytes)
-        {
-            double[] doubles = new double[bytes.Length / 3];
-            for (int i = 0; i < doubles.Length; i++)
-            {
-                byte red = bytes[3 * i + 1];
-                byte green = bytes[3 * i + 2];
-                byte blue = bytes[3 * i];
-                doubles[i] = ImageExtention.ToRGB(red, green, blue);
-            }
-            return doubles;
-        }
-
-        /// <summary>
         /// Запускает видео
         /// </summary>
         private void buttonGo_Click(object sender, EventArgs e)
@@ -94,9 +109,6 @@ namespace Lab_sp
             }
         }
 
-        private bool isPlay;
-        private bool stopFrame = true;
-        private Mat lastImage;
         /// <summary>
         /// Покадрово обновляет PictureBox, 
         /// пока в видео не закончатся кадры
@@ -134,6 +146,7 @@ namespace Lab_sp
 
                 VectorOfVectorOfPoint contours = image.FindContours();
                 Image<Bgr, Byte> colorImage = image.ToImage<Bgr, Byte>();
+                Image<Gray, Byte> grayImageCopy = colorImage.GetMonohromImage();
                 Image<Bgr, Byte> colorImageCopy = colorImage.Copy();
                 Image<Gray, Byte> grayImage = colorImage.GetMonohromImage();
                 //Эррозия
@@ -160,9 +173,9 @@ namespace Lab_sp
                         if (binaryImage != null && ImageExtention.GetPropBGR(binaryImage) >= 0.15)
                             try
                             {
-                                var data = GetData(image, rectangle, size);
-                                var classImage = Calculate(ConvectToDoubles(data));
-                                if (classImage[1] >= 0d)
+                                var data = GetData(grayImageCopy.Mat, rectangle, Settings.Instance.Size.Width);
+                                var classImage = Calculate(ImageExtention.ConvertToDoubles(data));
+                                if (classImage[1] > 0.5)
                                 {
                                     CvInvoke.DrawContours(colorImage, contours, i, new MCvScalar(255, 0, 0));
                                     CvInvoke.Rectangle(colorImage, rectangle, new MCvScalar(0, 255, 0), 2);
@@ -181,95 +194,9 @@ namespace Lab_sp
 
         private void buttonLearning_Click(object sender, EventArgs e)
         {
-            // species a 2-layer neural network with one hidden layer of 20 neurons
-            //if (net == null)
-            //{
-
-            //    var bmps1 = new Bitmap[] { Properties.Resources.a1_48x48, Properties.Resources.a2_48x48, Properties.Resources.a3_48x48 };
-            //    var bmps2 = new Bitmap[] { Properties.Resources.b1_48x48, Properties.Resources.b2_48x48, Properties.Resources.b3_48x48 };
-            //    var bmps3 = new Bitmap[] { Properties.Resources.c1_48x48, Properties.Resources.c2_48x48, Properties.Resources.c3_48x48 };
-            //    var bmps4 = new Bitmap[] { Properties.Resources.d1_48x48, Properties.Resources.d2_48x48, Properties.Resources.d3_48x48 };
-            //    exemples = new Bitmap[][] { bmps1, bmps2, bmps3, bmps4 };
-            //}
-
-            //Learning(exemples, new int[] { 0, 1, 2, 3 }, trainer, 10);
+           
 
 
-            //Не работает нормально - в разработке
-            //var res = folderBrowserDialog1.ShowDialog();
-            //int classImage = 0;
-            //try
-            //{
-            //    classImage = int.Parse(textBox2.Text);
-            //    if (res == DialogResult.OK)
-            //        Learning(folderBrowserDialog1.SelectedPath, 48, classImage, trainer, 10);
-            //}
-            //catch
-            //{
-            //    MessageBox.Show("Возможно номер класса задан неверно!");
-            //}
-
-            //Указать пути к папкам с выборками
-            //i - число классов
-            //j - число итераций обучения
-            //Временная мера - тестирование
-
-            int countTypes = 4;
-            if (trainingExamples == null)
-                LoadTrainingExamples(size, countTypes);
-
-            Learning(10);
-        }
-
-        /// <summary>
-        /// Обучение нейронной сети
-        /// </summary>
-        /// <param name="count">Количество циклов обучения</param>
-        public void Learning(int count)
-        {
-            for (int k = 0; k < count; k++)
-                for (int i = 0; i < trainingExamples.Count; i++)
-                    net.Train(trainingExamples[i].Input, trainingExamples[i].DesiredOutput());
-        }
-
-        /// <summary>
-        /// Заполняет тренировочную базу
-        /// </summary>
-        /// <param name="size">Размер тренировочных изображений</param>
-        /// <param name="countType">Количество классов</param>
-        private void LoadTrainingExamples(int size, int countType)
-        {
-            trainingExamples = new List<TrainingImage>();
-            for (int folderIndex = 0; folderIndex < countType; folderIndex++)
-            {
-                string[] pathToFiles = Directory.GetFiles(@"Resources\Class" + (folderIndex + 1));
-
-                for (int indexFile = 0; indexFile < pathToFiles.Length; indexFile++)
-                {
-                    Bitmap bmp = ImageExtention.CreateBitmap(pathToFiles[indexFile], size);
-                    trainingExamples.Add(new TrainingImage(ConvectToDoubles(bmp.GetData()), folderIndex, countType));
-                }
-            }
-            Shuffle(trainingExamples);
-        }
-
-        /// <summary>
-        /// Перемешивает элементы массива случайным образом.
-        /// Алгоритм перемешивания Fisher–Yates shuffle:
-        /// http://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm
-        /// </summary>
-        /// <typeparam name="T">Тип элементов массива</typeparam>
-        /// <param name="array">Массив для перемешивания</param>
-        public void Shuffle<T>(List<T> array)
-        {
-            Random rnd = new Random();
-            for (int i = array.Count - 1; i > 0; i--)
-            {
-                int j = rnd.Next(i + 1);
-                var buffer = array[i];
-                array[i] = array[j];
-                array[j] = buffer;
-            }
         }
 
         /// <summary>
@@ -308,28 +235,16 @@ namespace Lab_sp
 
         private void buttonOpenImage_Click(object sender, EventArgs e)
         {
-            if (openFileDialog.ShowDialog() != DialogResult.OK)
-                return;
+        }
 
-            Bitmap bmp = ImageExtention.CreateBitmap(openFileDialog.FileName, size);
-            var img = new Image<Bgr, byte>(bmp).GetMonohromImage();
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Clear();
+        }
 
-            pictureBox.Image = img.Bitmap;
-            byte[] data = bmp.GetData();
-            double colorInfo = ImageExtention.GetPropBGR(img);
-            int countPix = img.Width * img.Height;
-
-            Print("файл загружен! Анализ...");
-            Print("Всего ярковыраженых пикселей: " + colorInfo * countPix + " из " + countPix + " (" + (colorInfo * 100) + "%)");
-
-            double[] result = Calculate(ConvectToDoubles(data));
-            string info = "This is ";
-            if (colorInfo >= 0.15)
-                info += "class: " + result[0] + " with a chance: " + result[1];
-            else
-                info += "a void";
-            Print(info);
-            Print("==========================");
+        private void обучениеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new TrainingForm().ShowDialog();
         }
     }
 }

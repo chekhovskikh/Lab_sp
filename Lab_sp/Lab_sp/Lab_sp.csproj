@@ -36,10 +36,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ConvNetSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Lab\ConvNetSharp-master\src\ConvNetSharp\bin\Debug\ConvNetSharp.dll</HintPath>
-    </Reference>
     <Reference Include="Emgu.CV.UI, Version=3.1.0.2282, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
       <HintPath>..\packages\EmguCV.3.1.0.1\lib\net30\Emgu.CV.UI.dll</HintPath>
       <Private>True</Private>
@@ -52,6 +48,70 @@
       <HintPath>..\packages\EmguCV.3.1.0.1\lib\net30\Emgu.CV.World.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Hosting.Abstractions, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNetCore.Hosting.Abstractions.1.1.1\lib\net451\Microsoft.AspNetCore.Hosting.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Hosting.Server.Abstractions, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNetCore.Hosting.Server.Abstractions.1.1.1\lib\net451\Microsoft.AspNetCore.Hosting.Server.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Http.Abstractions, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNetCore.Http.Abstractions.1.1.1\lib\net451\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Http.Features, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNetCore.Http.Features.1.1.1\lib\net451\Microsoft.AspNetCore.Http.Features.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Caching.Abstractions, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Caching.Abstractions.1.1.1\lib\netstandard1.0\Microsoft.Extensions.Caching.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Caching.Memory, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Caching.Memory.1.1.1\lib\net451\Microsoft.Extensions.Caching.Memory.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Abstractions.1.1.1\lib\netstandard1.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=1.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.1.1.0\lib\netstandard1.1\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=1.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.1.0\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.FileProviders.Abstractions, Version=1.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.FileProviders.Abstractions.1.1.0\lib\netstandard1.0\Microsoft.Extensions.FileProviders.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.1.1.1\lib\netstandard1.1\Microsoft.Extensions.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.1.1.1\lib\netstandard1.1\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Options.1.1.1\lib\netstandard1.0\Microsoft.Extensions.Options.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=1.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.1.1.0\lib\netstandard1.0\Microsoft.Extensions.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.1.1.2225.0\lib\net20\OpenTK.dll</HintPath>
       <Private>True</Private>
@@ -60,10 +120,44 @@
       <HintPath>..\packages\OpenTK.GLControl.1.1.2225.0\lib\net20\OpenTK.GLControl.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Remotion.Linq, Version=2.1.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Remotion.Linq.2.1.1\lib\net45\Remotion.Linq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.3.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.104.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.104.0\lib\net451\System.Data.SQLite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.SQLite.EF6, Version=1.0.104.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.EF6.1.0.104.0\lib\net451\System.Data.SQLite.EF6.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq, Version=1.0.104.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.104.0\lib\net451\System.Data.SQLite.Linq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.3.0\lib\portable-net45+win8+wpa81\System.Diagnostics.DiagnosticSource.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Interactive.Async, Version=3.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Interactive.Async.3.0.0\lib\net45\System.Interactive.Async.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Text.Encodings.Web, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.4.3.0\lib\netstandard1.0\System.Text.Encodings.Web.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -80,39 +174,76 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NeuralNet\CNNFileManager.cs" />
-    <Compile Include="NeuralNet\ConvolutionalLayer.cs" />
-    <Compile Include="NeuralNet\FeatureMap.cs" />
-    <Compile Include="Main.cs">
+    <Compile Include="Core\DAL.cs" />
+    <Compile Include="Core\DAO\IEntityDAO.cs" />
+    <Compile Include="Core\DAO\SignDAO.cs" />
+    <Compile Include="Core\DAO\UserDAO.cs" />
+    <Compile Include="Core\DAO\VideoSignDAO.cs" />
+    <Compile Include="Core\NeuralNet\CNNFileManager.cs" />
+    <Compile Include="Core\NeuralNet\ConvolutionalLayer.cs" />
+    <Compile Include="Core\NeuralNet\FeatureMap.cs" />
+    <Compile Include="Core\Settings.cs" />
+    <Compile Include="Entities\FullInfoVideoSign.cs" />
+    <Compile Include="Entities\IEntity.cs" />
+    <Compile Include="Entities\Sign.cs" />
+    <Compile Include="Entities\User.cs" />
+    <Compile Include="Entities\VideoSign.cs" />
+    <Compile Include="View\Forms\Auth.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Main.Designer.cs">
+    <Compile Include="View\Forms\Auth.Designer.cs">
+      <DependentUpon>Auth.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Forms\Main.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\Forms\Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
-    <Compile Include="GeometryUtils.cs" />
-    <Compile Include="NeuralNet\InputConnection.cs" />
-    <Compile Include="NeuralNet\Layer.cs" />
-    <Compile Include="NeuralNet\Layer2D.cs" />
-    <Compile Include="NeuralNet\Network.cs" />
-    <Compile Include="NeuralNet\NetworkTrainingInfo.cs" />
-    <Compile Include="NeuralNet\Neuron.cs" />
-    <Compile Include="NeuralUtils\ActionRepeater.cs" />
-    <Compile Include="NeuralUtils\ArrayHelper.cs" />
-    <Compile Include="NeuralUtils\ArrayMath.cs" />
-    <Compile Include="NeuralUtils\Debug.cs" />
-    <Compile Include="NeuralUtils\KernelParams.cs" />
+    <Compile Include="Core\NeuralNet\InputConnection.cs" />
+    <Compile Include="Core\NeuralNet\Layer.cs" />
+    <Compile Include="Core\NeuralNet\Layer2D.cs" />
+    <Compile Include="Core\NeuralNet\Network.cs" />
+    <Compile Include="Core\NeuralNet\NetworkTrainingInfo.cs" />
+    <Compile Include="Core\NeuralNet\Neuron.cs" />
+    <Compile Include="Core\NeuralUtils\ActionRepeater.cs" />
+    <Compile Include="Core\NeuralUtils\ArrayHelper.cs" />
+    <Compile Include="Core\NeuralUtils\ArrayMath.cs" />
+    <Compile Include="Core\NeuralUtils\Debug.cs" />
+    <Compile Include="Core\NeuralUtils\KernelParams.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ImageExtention.cs" />
-    <Compile Include="NeuralNet\Weight.cs" />
-    <Compile Include="TrainingImage.cs" />
-    <EmbeddedResource Include="Main.resx">
+    <Compile Include="Core\ImageExtention.cs" />
+    <Compile Include="Core\NeuralNet\Weight.cs" />
+    <Compile Include="Core\TrainingImage.cs" />
+    <Compile Include="View\Forms\SplashScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\Forms\SplashScreen.Designer.cs">
+      <DependentUpon>SplashScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Forms\TrainingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\Forms\TrainingForm.Designer.cs">
+      <DependentUpon>TrainingForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="View\Forms\Auth.resx">
+      <DependentUpon>Auth.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\Forms\Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\Forms\SplashScreen.resx">
+      <DependentUpon>SplashScreen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\Forms\TrainingForm.resx">
+      <DependentUpon>TrainingForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
@@ -138,97 +269,100 @@
     <Folder Include="bin\Debug\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\image_for_learning1.bmp" />
+    <None Include="Core\Resources\image_for_learning1.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\5518aebf6a832b913ac46a635028beed.jpg" />
+    <None Include="Core\Resources\5518aebf6a832b913ac46a635028beed.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\K4i4wmrKRJA.jpg" />
+    <None Include="Core\Resources\K4i4wmrKRJA.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\oSDV-6f8vSQ.jpg" />
+    <None Include="Core\Resources\oSDV-6f8vSQ.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\okcsP8qf4OE.jpg" />
+    <None Include="Core\Resources\okcsP8qf4OE.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\44988118.jpeg" />
+    <None Include="Core\Resources\44988118.jpeg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\144070642511137425.png" />
+    <None Include="Core\Resources\144070642511137425.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\2.jpg" />
+    <None Include="Core\Resources\2.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\3.jpg" />
+    <None Include="Core\Resources\3.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\1.jpeg" />
+    <None Include="Core\Resources\1.jpeg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\b2.jpg" />
+    <None Include="Core\Resources\b2.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\b3.jpg" />
+    <None Include="Core\Resources\b3.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\b1.jpg" />
+    <None Include="Core\Resources\b1.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ab.jpg" />
+    <None Include="Core\Resources\ab.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\cl1.jpeg" />
+    <None Include="Core\Resources\cl1.jpeg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ab48x48.jpg" />
+    <None Include="Core\Resources\ab48x48.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\b2_48x48.jpg" />
+    <None Include="Core\Resources\b2_48x48.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\b3_48x48.jpg" />
+    <None Include="Core\Resources\b3_48x48.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\b1_48x48.jpg" />
+    <None Include="Core\Resources\b1_48x48.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\3_48x48.jpg" />
+    <None Include="Core\Resources\3_48x48.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\1_48x48.jpeg" />
+    <None Include="Core\Resources\1_48x48.jpeg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\2_48x48.jpg" />
+    <None Include="Core\Resources\2_48x48.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\cl1_48x48.jpeg" />
+    <None Include="Core\Resources\cl1_48x48.jpeg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ab_48x48.jpg" />
+    <None Include="Core\Resources\ab_48x48.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\c1_48x48.png" />
+    <None Include="Core\Resources\c1_48x48.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\c2_48x48.png" />
+    <None Include="Core\Resources\c2_48x48.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\c3_48x48.png" />
+    <None Include="Core\Resources\c3_48x48.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\c_48x48.png" />
+    <None Include="Core\Resources\c_48x48.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\d3_48x48.png" />
+    <None Include="Core\Resources\d3_48x48.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\d1_48x48.png" />
+    <None Include="Core\Resources\d1_48x48.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\d2_48x48.png" />
+    <None Include="Core\Resources\d2_48x48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SplashScreen.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -237,8 +371,10 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\EmguCV.3.1.0.1\build\EmguCV.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EmguCV.3.1.0.1\build\EmguCV.props'))" />
     <Error Condition="!Exists('..\packages\EmguCV.3.1.0.1\build\EmguCV.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EmguCV.3.1.0.1\build\EmguCV.targets'))" />
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.104.0\build\net451\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.104.0\build\net451\System.Data.SQLite.Core.targets'))" />
   </Target>
   <Import Project="..\packages\EmguCV.3.1.0.1\build\EmguCV.targets" Condition="Exists('..\packages\EmguCV.3.1.0.1\build\EmguCV.targets')" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.104.0\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.104.0\build\net451\System.Data.SQLite.Core.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

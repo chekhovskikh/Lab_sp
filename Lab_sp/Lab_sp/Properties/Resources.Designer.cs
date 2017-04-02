@@ -301,11 +301,30 @@ namespace Lab_sp.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Resources\haar_plate_cascade.xml.
+        ///   Ищет локализованную строку, похожую на Resources\data.cnn.
         /// </summary>
-        internal static string haar_plate_cascade {
+        internal static string data {
             get {
-                return ResourceManager.GetString("haar_plate_cascade", resourceCulture);
+                return ResourceManager.GetString("data", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Resources\database.db.
+        /// </summary>
+        internal static string db_name {
+            get {
+                return ResourceManager.GetString("db_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap SplashScreen {
+            get {
+                object obj = ResourceManager.GetObject("SplashScreen", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

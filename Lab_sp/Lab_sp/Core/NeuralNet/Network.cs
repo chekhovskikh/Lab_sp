@@ -142,7 +142,7 @@ namespace Recognition.NeuralNet
         /// <param name="width">Ширина изображения</param>
         /// <param name="height">Высота изображения</param>
         /// <param name="countOutputs">Количество выходов</param>
-        public Network(int width = 29, int height = 29, int countOutputs = 10)
+        public Network(int width = 48, int height = 48, int countOutputs = 9)
         {
             InputImageWidth = width;
             InputImageHeight = height;

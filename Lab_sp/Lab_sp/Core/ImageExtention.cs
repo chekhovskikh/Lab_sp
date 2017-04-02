@@ -10,6 +10,8 @@ using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using System.Drawing;
 using Emgu.CV.Util;
+using System.IO;
+using System.Drawing.Imaging;
 
 namespace Lab_sp
 {
@@ -90,15 +92,58 @@ namespace Lab_sp
         /// <summary>
         /// Создание битмапа с ресайзом
         /// </summary>
+        /// <param name="image">Изображение</param>
+        /// <param name="size">Размер выходного файла</param>
+        /// <returns>Изображение с заданным размером</returns>
+        public static Bitmap CreateBitmap(Image image, int size)
+        {
+            Bitmap bmp = new Bitmap(image);
+            if (bmp.Height != size || bmp.Width != size)
+                bmp = bmp.Resize(size, size);
+            return bmp;
+        }
+
+        /// <summary>
+        /// Создание битмапа с ресайзом
+        /// </summary>
         /// <param name="path">Путь к изображению</param>
         /// <param name="size">Размер выходного файла</param>
         /// <returns>Изображение с заданным размером</returns>
         public static Bitmap CreateBitmap(string path, int size)
         {
-            Bitmap bmp = new Bitmap(Image.FromFile(path));
+            Bitmap bmp = new Bitmap(path);
             if (bmp.Height != size || bmp.Width != size)
                 bmp = bmp.Resize(size, size);
             return bmp;
+        }
+
+        /// <summary>
+        /// Создает Bitmap из массива байт
+        /// </summary>
+        /// <param name="data">Массив</param>
+        /// <returns>Изображение</returns>
+        public static Bitmap BytesToBitmap(byte[] data)
+        {
+            using (MemoryStream ms = new MemoryStream(data, 0, data.Length))
+            {
+                ms.Write(data, 0, data.Length);
+                return new Bitmap(ms);
+            }
+        }
+
+        /// <summary>
+        /// Создает массива байт из Bitmap
+        /// </summary>
+        /// <param name="bmp">Изображение</param>
+        /// <returns>Массив</returns>
+        public static byte[] BitmapToBytes(Bitmap bmp)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                bmp.Save(ms, ImageFormat.Jpeg);
+                byte[] imageBytes = ms.ToArray();
+                return imageBytes;
+            }
         }
 
         /// <summary>
@@ -112,7 +157,43 @@ namespace Lab_sp
         /// <returns></returns>
         public static byte[] GetData(this Bitmap bmp)
         {
-            return new Image<Bgr, Byte>(bmp).Mat.GetData();
+            Image<Bgr, byte> image = new Image<Bgr, byte>(bmp);
+            return image.Mat.GetData();
+        }
+
+        /// <summary>
+        /// Перегрузка функции - на входе Bitmap, а не Mat
+        /// Получает массив байтов бинарного изображения
+        /// пикселей входящих в облать заданного прямоугольника изображения
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="rectangle"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public static byte[] GetBinaryData(this Bitmap bmp)
+        {
+            Image<Gray, Byte> grayImage = new Image<Gray, Byte>(bmp);
+            CvInvoke.Threshold(grayImage, grayImage, 127, 255, ThresholdType.Binary);
+            return grayImage.Mat.GetData();
+        }
+
+        /// <summary>
+        /// Перевод массива byte[] -> double[] с преобразованием 
+        /// представления цвета одним числом
+        /// </summary>
+        /// <param name="bytes">Массив для конвектирования</param>
+        /// <returns>Конвектированный массив</returns>
+        public static double[] ConvertToDoubles(byte[] bytes)
+        {
+            double[] doubles = new double[bytes.Length];
+            for (int i = 0; i < doubles.Length; i++)
+            {
+                /*byte red = bytes[3 * i + 1];
+                byte green = bytes[3 * i + 2];
+                byte blue = bytes[3 * i];*/
+                doubles[i] = (bytes[i] == 0) ? 0 : 1;
+            }
+            return doubles;
         }
 
         /// <summary>
@@ -126,6 +207,8 @@ namespace Lab_sp
         {
             return (red << 16) | (green << 8) | blue;
         }
+
+
 
         #region На правах рекламы. Chekhovskikh (с)
         //+===================================+
