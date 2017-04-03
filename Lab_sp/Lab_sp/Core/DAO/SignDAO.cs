@@ -102,7 +102,7 @@ namespace Lab_sp.Core.DAO
         {
             SQLiteCommand command = new SQLiteCommand("UPDATE Sign SET " +
                 "Name='" + updatedSign.Name +
-                "', 'Gost=" + updatedSign.Gost +
+                "', Gost='" + updatedSign.Gost +
                 "', Type='" + updatedSign.Type +
                 "', Image=@0" +
                 " WHERE Id=" + updatedSign.Id + ";", connection);

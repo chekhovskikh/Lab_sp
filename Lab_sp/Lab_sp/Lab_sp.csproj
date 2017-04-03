@@ -194,6 +194,12 @@
     <Compile Include="View\Forms\Auth.Designer.cs">
       <DependentUpon>Auth.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\Forms\InfoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\Forms\InfoForm.Designer.cs">
+      <DependentUpon>InfoForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\Forms\Main.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -216,6 +222,12 @@
     <Compile Include="Core\ImageExtention.cs" />
     <Compile Include="Core\NeuralNet\Weight.cs" />
     <Compile Include="Core\TrainingImage.cs" />
+    <Compile Include="View\Forms\SignManualForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\Forms\SignManualForm.Designer.cs">
+      <DependentUpon>SignManualForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\Forms\SplashScreen.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -228,8 +240,17 @@
     <Compile Include="View\Forms\TrainingForm.Designer.cs">
       <DependentUpon>TrainingForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\Forms\UsersManualForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\Forms\UsersManualForm.Designer.cs">
+      <DependentUpon>UsersManualForm.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="View\Forms\Auth.resx">
       <DependentUpon>Auth.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\Forms\InfoForm.resx">
+      <DependentUpon>InfoForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\Forms\Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
@@ -239,11 +260,17 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="View\Forms\SignManualForm.resx">
+      <DependentUpon>SignManualForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="View\Forms\SplashScreen.resx">
       <DependentUpon>SplashScreen.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\Forms\TrainingForm.resx">
       <DependentUpon>TrainingForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\Forms\UsersManualForm.resx">
+      <DependentUpon>UsersManualForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />

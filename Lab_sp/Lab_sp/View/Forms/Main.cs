@@ -55,18 +55,12 @@ namespace Lab_sp
                     break;
                 default:
                     //Сокрытие управления
-                    if(menuStrip1.Items.ContainsKey("управлениеToolStripMenuItem"))
-                    {
-                        var item = menuStrip1.Items[menuStrip1.Items.IndexOfKey("управлениеToolStripMenuItem")];
-                        item.Enabled = false;
-                        item.Visible = false;
-                    }
-                    if (menuStrip1.Items.ContainsKey("справочникToolStripMenuItem"))
-                    {
-                        var item = menuStrip1.Items[menuStrip1.Items.IndexOfKey("справочникToolStripMenuItem")];
-                        item.Enabled = false;
-                        item.Visible = false;
-                    }
+                    managmentMenuItem.Enabled = false;
+                    managmentMenuItem.Visible = false;
+                    signsMenuItem.Enabled = false;
+                    signsMenuItem.Visible = false;
+                    usersMenuItem.Enabled = false;
+                    usersMenuItem.Visible = false;
                     Text += " (Пользователь)";
                     break;
             }
@@ -76,6 +70,7 @@ namespace Lab_sp
         /// Позволяет работать с видео покадрово
         /// </summary>
         private Capture capture = null;
+        private Thread thread;
 
         /// <summary>
         /// Получает массив байтов (каждый пиксель занимает 3 элемента, так как color = RGB)
@@ -99,13 +94,21 @@ namespace Lab_sp
         private void buttonGo_Click(object sender, EventArgs e)
         {
             Clear();
-            capture = new Capture(Properties.Resources.video_path);
+            if (openFileDialog.FileName == "default")
+            {
+                MessageBox.Show("Выберите видеозапись для начала работы");
+                return;
+            }
             stopFrame = !stopFrame;
+            if (stopFrame) openVideoMenuItem.Enabled = true;
+            else openVideoMenuItem.Enabled = false;
 
             if (!isPlay)
             {
                 isPlay = true;
-                new Thread(PlayVideo).Start();
+                if (thread == null)
+                    thread = new Thread(PlayVideo);
+                thread.Start();
             }
         }
 
@@ -117,13 +120,10 @@ namespace Lab_sp
         {
             while (true)
             {
-                Mat image = null;
-                if (!stopFrame)
-                {
-                    image = capture.QueryFrame();
-                    lastImage = image;
-                }
-                else image = lastImage;
+                while (stopFrame)
+                    Thread.Sleep(10);
+
+                Mat image = capture.QueryFrame();
 
                 if (image == null)
                     break;
@@ -188,15 +188,16 @@ namespace Lab_sp
                 lock (pictureBox) { pictureBox.Image = colorImage.Bitmap; }
                 lock (pictureBox) { pictureBox1.Image = colorImageCopy.And(grayImage.Convert<Bgr, Byte>()).Bitmap; }
             }
+            menuStrip.Invoke(new EventHandler(delegate { openVideoMenuItem.Enabled = true; }));
             MessageBox.Show("Видео закончилось");
+            stopFrame = !stopFrame;
+            isPlay = !isPlay;
         }
 
 
         private void buttonLearning_Click(object sender, EventArgs e)
         {
            
-
-
         }
 
         /// <summary>
@@ -237,14 +238,48 @@ namespace Lab_sp
         {
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonClear_Click(object sender, EventArgs e)
         {
             Clear();
         }
 
-        private void обучениеToolStripMenuItem_Click(object sender, EventArgs e)
+        private void learningMenuItem_Click(object sender, EventArgs e)
         {
             new TrainingForm().ShowDialog();
+        }
+
+        private void infoMenuItem_Click(object sender, EventArgs e)
+        {
+            new InfoForm().ShowDialog();
+        }
+
+        private void signsMenuItem_Click(object sender, EventArgs e)
+        {
+            new SignManualForm().ShowDialog();
+        }
+
+        private void usersMenuItem_Click(object sender, EventArgs e)
+        {
+            new UsersManualForm().ShowDialog();
+        }
+
+        private void openVideoMenuItem_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                Capture cap = new Capture(openFileDialog.FileName);
+                Mat img = cap.QueryFrame();
+                if (img.Width <= 1920 && img.Width >= 640 && img.Height <= 1080 && img.Height >= 480)
+                {
+                    capture = cap;
+                    pictureBox.Image = img.Bitmap;
+                }
+                else
+                {
+                    openFileDialog.FileName = "default";
+                    MessageBox.Show("Видеозапись имеет недопустимое разрешение!");
+                }
+            }
         }
     }
 }

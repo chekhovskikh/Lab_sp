@@ -136,11 +136,12 @@ namespace Lab_sp
         /// </summary>
         /// <param name="bmp">Изображение</param>
         /// <returns>Массив</returns>
-        public static byte[] BitmapToBytes(Bitmap bmp)
+        public static byte[] BitmapToBytes(Image img)
         {
+            Bitmap bmp = new Bitmap(img);
             using (MemoryStream ms = new MemoryStream())
             {
-                bmp.Save(ms, ImageFormat.Jpeg);
+                bmp.Save(ms, ImageFormat.Bmp);
                 byte[] imageBytes = ms.ToArray();
                 return imageBytes;
             }
