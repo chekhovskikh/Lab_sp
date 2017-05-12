@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Lab_sp.Core.DAO
 {
-    class VideoSignDAO : IEntityDTO<VideoSign>
+    class VideoSignDAO : IEntityDAO<VideoSign>
     {
         private SQLiteConnection connection = null;
 
@@ -80,6 +80,12 @@ namespace Lab_sp.Core.DAO
         public void Remove(VideoSign videoSign)
         {
             Remove(videoSign.Id);
+        }
+
+        public void RemoveAll()
+        {
+            SQLiteCommand command = new SQLiteCommand("DELETE FROM VideoSign;", connection);
+            command.ExecuteNonQuery();
         }
 
         public void Update(VideoSign updatedVideoSign)

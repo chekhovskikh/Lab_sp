@@ -12,9 +12,9 @@ namespace Lab_sp.Core
 {
     public class DAL
     {
-        private IEntityDTO<User> userDTO = null;
-        private IEntityDTO<Sign> signDTO = null;
-        private IEntityDTO<VideoSign> videoSignDTO = null;
+        private IEntityDAO<User> userDAO = null;
+        private IEntityDAO<Sign> signDAO = null;
+        private IEntityDAO<VideoSign> videoSignDAO = null;
 
         private SQLiteConnection connection = null;
 
@@ -22,9 +22,9 @@ namespace Lab_sp.Core
         {
             connection = new SQLiteConnection(
                 string.Format("Data Source={0};", Properties.Resources.db_name));
-            userDTO = new UserDAO(connection);
-            signDTO = new SignDAO(connection);
-            videoSignDTO = new VideoSignDAO(connection);
+            userDAO = new UserDAO(connection);
+            signDAO = new SignDAO(connection);
+            videoSignDAO = new VideoSignDAO(connection);
             connection.Open();
         }
 
@@ -36,116 +36,121 @@ namespace Lab_sp.Core
         #region User
         public User GetUser(int id)
         {
-            return userDTO.Get(id);
+            return userDAO.Get(id);
         }
 
         public List<User> AllUsers()
         {
-            return userDTO.GetAll();
+            return userDAO.GetAll();
         }
 
         public void AddUser(User user)
         {
-            userDTO.Add(user);
+            userDAO.Add(user);
         }
 
         public void AddAllUsers(List<User> users)
         {
-            userDTO.AddAll(users);
+            userDAO.AddAll(users);
         }
 
         public void RemoveUser(User user)
         {
-            userDTO.Remove(user);
+            userDAO.Remove(user);
         }
 
         public void RemoveUser(int id)
         {
-            userDTO.Remove(id);
+            userDAO.Remove(id);
         }
 
         public void UpdateUser(User updatedUser)
         {
-            userDTO.Update(updatedUser);
+            userDAO.Update(updatedUser);
         }
         #endregion User
 
         #region Sign
         public Sign GetSign(int id)
         {
-            return signDTO.Get(id);
+            return signDAO.Get(id);
         }
 
         public int GetIdForGost(string Gost)
         {
-            return (signDTO as SignDAO).GetIdForGost(Gost);
+            return (signDAO as SignDAO).GetIdForGost(Gost);
         }
 
         public List<Sign> AllSigns()
         {
-            return signDTO.GetAll();
+            return signDAO.GetAll();
         }
 
         public void AddSign(Sign sign)
         {
-            signDTO.Add(sign);
+            signDAO.Add(sign);
         }
 
         public void AddAllSigns(List<Sign> signs)
         {
-            signDTO.AddAll(signs);
+            signDAO.AddAll(signs);
         }
 
         public void RemoveSign(Sign sign)
         {
-            signDTO.Remove(sign);
+            signDAO.Remove(sign);
         }
 
         public void RemoveSign(int id)
         {
-            signDTO.Remove(id);
+            signDAO.Remove(id);
         }
 
         public void UpdateSign(Sign updatedSign)
         {
-            signDTO.Update(updatedSign);
+            signDAO.Update(updatedSign);
         }
         #endregion Sign
 
         #region VideoSign
         public VideoSign GetVideoSign(int id)
         {
-            return videoSignDTO.Get(id);
+            return videoSignDAO.Get(id);
         }
 
         public List<VideoSign> AllVideoSigns()
         {
-            return videoSignDTO.GetAll();
+            return videoSignDAO.GetAll();
         }
 
         public void AddVideoSign(VideoSign videoSign)
         {
-            videoSignDTO.Add(videoSign);
+            videoSignDAO.Add(videoSign);
         }
 
         public void AddAllVideoSigns(List<VideoSign> videoSigns)
         {
-            videoSignDTO.AddAll(videoSigns);
+            videoSignDAO.AddAll(videoSigns);
         }
 
         public void RemoveVideoSign(VideoSign videoSign)
         {
-            videoSignDTO.Remove(videoSign);
+            videoSignDAO.Remove(videoSign);
         }
 
         public void RemoveVideoSign(int id)
         {
-            videoSignDTO.Remove(id);
+            videoSignDAO.Remove(id);
+        }
+
+        public void RemoveAllVideoSigns()
+        {
+            (videoSignDAO as VideoSignDAO).RemoveAll();
         }
 
         public void UpdateVideoSign(VideoSign updatedVideoSign)
         {
-            videoSignDTO.Update(updatedVideoSign);
+            videoSignDAO.Update(updatedVideoSign);
         }
         #endregion VideoSign
 

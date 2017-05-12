@@ -159,6 +159,7 @@
     </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -188,11 +189,23 @@
     <Compile Include="Entities\Sign.cs" />
     <Compile Include="Entities\User.cs" />
     <Compile Include="Entities\VideoSign.cs" />
-    <Compile Include="View\Forms\Auth.cs">
+    <Compile Include="View\Forms\AuthForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="View\Forms\Auth.Designer.cs">
-      <DependentUpon>Auth.cs</DependentUpon>
+    <Compile Include="View\Forms\AuthForm.Designer.cs">
+      <DependentUpon>AuthForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Forms\CreateNetForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\Forms\CreateNetForm.Designer.cs">
+      <DependentUpon>CreateNetForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\Forms\DiagramForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\Forms\DiagramForm.Designer.cs">
+      <DependentUpon>DiagramForm.cs</DependentUpon>
     </Compile>
     <Compile Include="View\Forms\InfoForm.cs">
       <SubType>Form</SubType>
@@ -246,8 +259,20 @@
     <Compile Include="View\Forms\UsersManualForm.Designer.cs">
       <DependentUpon>UsersManualForm.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="View\Forms\Auth.resx">
-      <DependentUpon>Auth.cs</DependentUpon>
+    <Compile Include="View\Forms\VideoSignManualForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\Forms\VideoSignManualForm.Designer.cs">
+      <DependentUpon>VideoSignManualForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="View\Forms\AuthForm.resx">
+      <DependentUpon>AuthForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\Forms\CreateNetForm.resx">
+      <DependentUpon>CreateNetForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\Forms\DiagramForm.resx">
+      <DependentUpon>DiagramForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\Forms\InfoForm.resx">
       <DependentUpon>InfoForm.cs</DependentUpon>
@@ -271,6 +296,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="View\Forms\UsersManualForm.resx">
       <DependentUpon>UsersManualForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\Forms\VideoSignManualForm.resx">
+      <DependentUpon>VideoSignManualForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
@@ -390,6 +418,39 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\SplashScreen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pause1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pause2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\play1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\play2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\enter1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\enter2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\minisize1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\minisize2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\welcome.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cross1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cross2.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

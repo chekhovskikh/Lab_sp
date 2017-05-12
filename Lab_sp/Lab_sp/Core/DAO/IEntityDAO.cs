@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Lab_sp.Core.DAO
 {
-    interface IEntityDTO<T> where T : IEntity
+    interface IEntityDAO<T> where T : IEntity
     {
         T Get(int id);
         List<T> GetAll();

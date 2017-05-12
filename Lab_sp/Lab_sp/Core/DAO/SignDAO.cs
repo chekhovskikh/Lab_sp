@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Lab_sp.Core.DAO
 {
-    class SignDAO : IEntityDTO<Sign>
+    class SignDAO : IEntityDAO<Sign>
     {
         private SQLiteConnection connection = null;
 
@@ -90,12 +90,6 @@ namespace Lab_sp.Core.DAO
         public void Remove(Sign sign)
         {
             Remove(sign.Id);
-        }
-
-        public void RemoveAll()
-        {
-            SQLiteCommand command = new SQLiteCommand("DELETE FROM Sign;", connection);
-            command.ExecuteNonQuery();
         }
 
         public void Update(Sign updatedSign)

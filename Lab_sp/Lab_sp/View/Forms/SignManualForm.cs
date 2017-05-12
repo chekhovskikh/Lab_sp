@@ -17,6 +17,7 @@ namespace Lab_sp.View.Forms
         public SignManualForm()
         {
             InitializeComponent();
+            SelectFormAccordingToLevelAccess();
         }
 
         private void Manual_Load(object sender, EventArgs e)
@@ -24,6 +25,22 @@ namespace Lab_sp.View.Forms
             List<Sign> signs = Settings.Instance.DataLayer.AllSigns();
             foreach (var sign in signs)
                 dataGridView.Rows.Add(sign.Image, sign.Name, sign.Gost, sign.Type);
+        }
+
+        /// <summary>
+        /// Изменить визуальное представление формы соответственно уровню доступа пользователя
+        /// </summary>
+        private void SelectFormAccordingToLevelAccess()
+        {
+            switch (Settings.Instance.Role)
+            {
+                case Settings.UserRole.Admin:
+                    Text += " (Администратор)";
+                    break;
+                default:
+                    Text += " (Пользователь)";
+                    break;
+            }
         }
     }
 }

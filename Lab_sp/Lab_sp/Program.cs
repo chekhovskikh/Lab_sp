@@ -18,12 +18,10 @@ namespace Lab_sp
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
-            
             new SplashScreen().ShowDialog();
-            //Settings.Instance.Role = Settings.UserRole.Admin;
-            if (new Auth().ShowDialog() == DialogResult.OK)
+            if (new AuthForm().ShowDialog() == DialogResult.OK)
                 Application.Run(new Main());
+            Environment.Exit(1);
         }
     }
 }

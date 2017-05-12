@@ -20,16 +20,15 @@ using Lab_sp.Core;
 using Lab_sp.View.Forms;
 using Lab_sp.Entities;
 using System.Data.Entity;
+using System.Collections;
 
 namespace Lab_sp
 {
     public partial class Main : Form
     {
-        private Network net;   
-
         private bool isPlay;
         private bool stopFrame = true;
-        private Mat lastImage;
+        private Queue<List<string>> buffer;
 
         /// <summary>
         /// Пусть будет - это конструктор
@@ -38,9 +37,7 @@ namespace Lab_sp
         {
             InitializeComponent();
             SelectFormAccordingToLevelAccess();
-            //net = new Network(size, size, 4);
-            net = Settings.Instance.Network;
-            //Settings.Instance.Network = net;
+            buffer = new Queue<List<string>>();
         }
 
         /// <summary>
@@ -55,12 +52,8 @@ namespace Lab_sp
                     break;
                 default:
                     //Сокрытие управления
-                    managmentMenuItem.Enabled = false;
                     managmentMenuItem.Visible = false;
-                    signsMenuItem.Enabled = false;
-                    signsMenuItem.Visible = false;
-                    usersMenuItem.Enabled = false;
-                    usersMenuItem.Visible = false;
+                    manualMenuItem.Visible = false;
                     Text += " (Пользователь)";
                     break;
             }
@@ -80,44 +73,59 @@ namespace Lab_sp
         /// <param name="rectangle">рассматриваемая область изображения</param>
         /// <param name="size">размер для ресайза</param>
         /// <returns></returns>
-        private byte[] GetData(Mat image, Rectangle rectangle, int size)
+        private byte[] GetData(Mat image, Rectangle rectangle, Size size)
         {
             Mat objectFromFrame = new Mat(image, rectangle);
             Mat resizeObject = new Mat();
-            CvInvoke.Resize(objectFromFrame, resizeObject, new Size(size, size));
+            CvInvoke.Resize(objectFromFrame, resizeObject, size);
             return resizeObject.GetData();
         }
 
         /// <summary>
         /// Запускает видео
         /// </summary>
-        private void buttonGo_Click(object sender, EventArgs e)
+        private void picturePlay_Click(object sender, EventArgs e)
         {
-            Clear();
             if (openFileDialog.FileName == "default")
             {
                 MessageBox.Show("Выберите видеозапись для начала работы");
                 return;
             }
+
             stopFrame = !stopFrame;
-            if (stopFrame) openVideoMenuItem.Enabled = true;
-            else openVideoMenuItem.Enabled = false;
+            if (stopFrame)
+            {
+                fileMenuItem.Enabled = true;
+                managmentMenuItem.Enabled = true;
+                picturePlay.Image = Properties.Resources.play1;
+            }
+            else
+            {
+                fileMenuItem.Enabled = false;
+                managmentMenuItem.Enabled = false;
+                picturePlay.Image = Properties.Resources.pause1;
+            }
 
             if (!isPlay)
             {
+                Clear();
                 isPlay = true;
                 if (thread == null)
                     thread = new Thread(PlayVideo);
                 thread.Start();
             }
         }
-
+        
+        delegate void AddControl(Control control);
         /// <summary>
         /// Покадрово обновляет PictureBox, 
         /// пока в видео не закончатся кадры
         /// </summary>
         private void PlayVideo()
         {
+            buffer.Clear();
+            AddControl addControl = new AddControl(logPanel.Controls.Add);
+
             while (true)
             {
                 while (stopFrame)
@@ -128,26 +136,11 @@ namespace Lab_sp
                 if (image == null)
                     break;
 
-                //var archor = new Point(-1, -1);
-
-                //Эррозия
-                //Mat kernel = CvInvoke.GetStructuringElement(Emgu.CV.CvEnum.ElementShape.Cross, new
-                //    Size(5, 5), new Point(-1, -1));
-                //image = image.ToImage<Bgr, Byte>().MorphologyEx(Emgu.CV.CvEnum.MorphOp.Dilate, kernel, archor, 3,
-                //BorderType.Constant, new MCvScalar(0, 0, 0)).Mat;
-
-                //Четкость
-                //Matrix<float> kernel1 = new Matrix<float>(new float[3, 3] { { -0.1f, -0.1f, -0.1f },
-                //                                              {- 0.1f, 2f, -0.1f }, { -0.1f, -0.1f, -0.1f } });
-                //Увеличение яркости
-                //Matrix<float> kernel2 = new Matrix<float>(new float[3, 3] { { -0.1f, 0.2f, -0.1f }, {
-                //                                                  0.2f, 3f, 0.2f }, { -0.1f, 0.2f, -0.1f } });
-                //CvInvoke.Filter2D(image.ToImage<Bgr, Byte>().Copy(), image, kernel1, archor);
-
+                List<string> foundGosts = new List<string>();
                 VectorOfVectorOfPoint contours = image.FindContours();
                 Image<Bgr, Byte> colorImage = image.ToImage<Bgr, Byte>();
                 Image<Gray, Byte> grayImageCopy = colorImage.GetMonohromImage();
-                Image<Bgr, Byte> colorImageCopy = colorImage.Copy();
+                //Image<Bgr, Byte> colorImageCopy = colorImage.Copy();
                 Image<Gray, Byte> grayImage = colorImage.GetMonohromImage();
                 //Эррозия
                 //Уберем шумы на ч/б изображении
@@ -173,31 +166,94 @@ namespace Lab_sp
                         if (binaryImage != null && ImageExtention.GetPropBGR(binaryImage) >= 0.15)
                             try
                             {
-                                var data = GetData(grayImageCopy.Mat, rectangle, Settings.Instance.Size.Width);
-                                var classImage = Calculate(ImageExtention.ConvertToDoubles(data));
-                                if (classImage[1] > 0.5)
+                                double[] data = null;
+                                if (!Settings.Instance.IsColor)
                                 {
+                                    var dataBW = GetData(grayImageCopy.Mat, rectangle, Settings.Instance.Size);
+                                    data = ImageExtention.ConvertToDoubles(dataBW);
+                                }
+                                else
+                                {
+                                    var dataColor = GetData(colorImage.Mat, rectangle, Settings.Instance.Size);
+                                    data = ImageExtention.GetRGB(dataColor);
+                                }
+                                
+                                var result = Calculate(data);
+                                if (result[1] > 0.5)
+                                {
+                                    Sign sign = Settings.Instance.DataLayer.GetSign((int)result[0]);
                                     CvInvoke.DrawContours(colorImage, contours, i, new MCvScalar(255, 0, 0));
                                     CvInvoke.Rectangle(colorImage, rectangle, new MCvScalar(0, 255, 0), 2);
-                                    CvInvoke.PutText(colorImage, classImage[0] + "", new Point(rectangle.X, rectangle.Y + rectangle.Height / 2), FontFace.HersheyPlain, 2, new MCvScalar(0, 0, 255), 2);
+                                    CvInvoke.PutText(colorImage, sign.Gost, new Point(rectangle.X, rectangle.Y + rectangle.Height / 2), FontFace.HersheyPlain, 2, new MCvScalar(0, 0, 255), 2);
+
+                                    if (!BufferIsContains(sign.Gost) && !foundGosts.Contains(sign.Gost))
+                                    {
+                                        //добавляем в базу найденный на видео знак если он не появлялся в течении N кадров
+                                        Bitmap bmp = ImageExtention.ResizedRectangle(image, rectangle, Settings.Instance.Size);
+                                        double ms = capture.GetCaptureProperty(CapProp.PosMsec);
+                                        string time = TimeSpan.FromMilliseconds(ms).ToString().Substring(0, 8);
+
+                                        //раскомментировать для добавлении в базу
+                                        Settings.Instance.DataLayer.AddVideoSign(new VideoSign(sign.Id, time, bmp));
+
+                                        Label infoLabel = new Label();
+                                        infoLabel.Text = sign.Name + Environment.NewLine +
+                                                         sign.Gost + Environment.NewLine +
+                                                         time + Environment.NewLine +
+                                                         sign.Type + Environment.NewLine;
+                                        infoLabel.Size = new Size(200, 70);
+
+                                        logPanel.Invoke(addControl, CreatePictureBox(bmp));
+                                        logPanel.Invoke(addControl, CreatePictureBox(sign.Image));
+                                        logPanel.Invoke(addControl, infoLabel);
+                                        logPanel.Invoke(new EventHandler(delegate { logPanel.VerticalScroll.Value = logPanel.VerticalScroll.Maximum; }));
+                                    }
+                                    foundGosts.Add(sign.Gost);
                                 }
                             }
                             catch (CvException) { }
                     }
                 }
+                UpdateBuffer(foundGosts);
+
                 lock (pictureBox) { pictureBox.Image = colorImage.Bitmap; }
-                lock (pictureBox) { pictureBox1.Image = colorImageCopy.And(grayImage.Convert<Bgr, Byte>()).Bitmap; }
+                //lock (pictureBox) { pictureBox1.Image = colorImageCopy.And(grayImage.Convert<Bgr, Byte>()).Bitmap; }
             }
-            menuStrip.Invoke(new EventHandler(delegate { openVideoMenuItem.Enabled = true; }));
+            menuStrip.Invoke(new EventHandler(delegate 
+            {
+                fileMenuItem.Enabled = true;
+                managmentMenuItem.Enabled = true;
+            }));
+            picturePlay.Invoke(new EventHandler(delegate { picturePlay.Image = Properties.Resources.play1; }));
             MessageBox.Show("Видео закончилось");
             stopFrame = !stopFrame;
             isPlay = !isPlay;
+            thread = null;
+            capture = new Capture(openFileDialog.FileName);
         }
 
-
-        private void buttonLearning_Click(object sender, EventArgs e)
+        private bool BufferIsContains(string gost)
         {
-           
+            foreach (var list in buffer)
+                if (list.Contains(gost))
+                    return true;
+            return false;
+        }
+
+        private void UpdateBuffer(List<string> list)
+        {
+            buffer.Enqueue(list);
+            if (buffer.Count > 10) //10 - длинна буффера
+                buffer.Dequeue();
+        }
+
+        private PictureBox CreatePictureBox(Bitmap image)
+        {
+            PictureBox pic = new PictureBox();
+            pic.Size = Settings.Instance.Size;
+            pic.Image = new Bitmap(image);
+            pic.Location = new Point(0, 0);
+            return pic;
         }
 
         /// <summary>
@@ -207,12 +263,7 @@ namespace Lab_sp
         /// <returns>Класс с максимальной возможностью и его вес</returns>
         private double[] Calculate(double[] image)
         {
-            double[] output = net.Calculate(image);
-
-            /*for (int i = 0; i < output.Length; i++)
-                Print("probability that x is class " + i + ": " + output[i]);
-            Print("==================================================: ");*/
-
+            double[] output = Settings.Instance.Network.Calculate(image);
             double max = output[0];
             int max_i = 0;
             for (int i = 1; i < output.Length; i++)
@@ -221,24 +272,16 @@ namespace Lab_sp
                     max = output[i];
                     max_i = i;
                 }
-            return new double[] { max_i, max };
+            return new double[] { max_i + 1, max };
         }
-
-        private void Print(string text)
-        {
-            infoBox.Text = text + Environment.NewLine + infoBox.Text;
-        }
+        
 
         private void Clear()
         {
-            infoBox.Text = "";
+            logPanel.Controls.Clear();
         }
 
-        private void buttonOpenImage_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void buttonClear_Click(object sender, EventArgs e)
+        private void clearLogMenuItem_Click(object sender, EventArgs e)
         {
             Clear();
         }
@@ -263,8 +306,14 @@ namespace Lab_sp
             new UsersManualForm().ShowDialog();
         }
 
+        private void videoSignsMenuItem_Click(object sender, EventArgs e)
+        {
+            new VideoSignManualForm().ShowDialog();
+        }
+
         private void openVideoMenuItem_Click(object sender, EventArgs e)
         {
+            string fileName = openFileDialog.FileName;
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 Capture cap = new Capture(openFileDialog.FileName);
@@ -272,14 +321,64 @@ namespace Lab_sp
                 if (img.Width <= 1920 && img.Width >= 640 && img.Height <= 1080 && img.Height >= 480)
                 {
                     capture = cap;
+                    picturePlay.Visible = true;
                     pictureBox.Image = img.Bitmap;
                 }
                 else
                 {
-                    openFileDialog.FileName = "default";
+                    openFileDialog.FileName = fileName;
                     MessageBox.Show("Видеозапись имеет недопустимое разрешение!");
                 }
             }
+        }
+
+        private void picturePlay_MouseEnter(object sender, EventArgs e)
+        {
+            if (!stopFrame) picturePlay.Image = Properties.Resources.pause2;
+            else picturePlay.Image = Properties.Resources.play2;
+        }
+
+        private void picturePlay_MouseLeave(object sender, EventArgs e)
+        {
+            if (!stopFrame) picturePlay.Image = Properties.Resources.pause1;
+            else picturePlay.Image = Properties.Resources.play1;
+        }
+
+        private Size minimumSize = new Size(590, 460);
+        private Size maximumSize = new Size(940, 460);
+        private void buttonHideLog_Click(object sender, EventArgs e)
+        {
+            if (buttonHideLog.Text == "<")
+            {
+                buttonHideLog.Text = ">";
+                MinimumSize = minimumSize;
+                MaximumSize = minimumSize;
+            }
+            else
+            {
+                buttonHideLog.Text = "<";
+                MinimumSize = maximumSize;
+                MaximumSize = maximumSize;
+            }
+        }
+
+        private void clearMenuItem_Click(object sender, EventArgs e)
+        {
+            Clear();
+        }
+
+        private void Main_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (MessageBox.Show("Вы действительно хотите закрыть программу?", "Подтверждение",
+                MessageBoxButtons.YesNo) == DialogResult.Yes)
+                CNNFileManager.SaveNetwork(Settings.Instance.Network, Properties.Resources.data);
+            else e.Cancel = true;
+        }
+
+        private void taskMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Разработка автоматизированной системы " + 
+                "по распознаванию дорожных знаков на видеозаписи.", "Задание");
         }
     }
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Lab_sp.Core.DAO
 {
-    class UserDAO : IEntityDTO<User>
+    class UserDAO : IEntityDAO<User>
     {
         private SQLiteConnection connection = null;
 

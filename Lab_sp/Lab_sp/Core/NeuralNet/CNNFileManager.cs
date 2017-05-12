@@ -2,6 +2,7 @@
 using System.IO;
 using System.Web.Script.Serialization;
 using Recognition.NeuralUtils;
+using Lab_sp.Core;
 
 namespace Recognition.NeuralNet
 {
@@ -19,7 +20,7 @@ namespace Recognition.NeuralNet
             Debug.AssertNotNull(path);
 
             var data = File.ReadAllText(path);
-            var network = new Network();
+            var network = new Network(Settings.Instance.Size.Height, Settings.Instance.Size.Width);
             var info = Serializer.Deserialize<NetworkSerializeInfo>(data);
             info.LoadDataTo(network);
 

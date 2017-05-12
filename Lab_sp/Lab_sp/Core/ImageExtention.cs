@@ -83,10 +83,10 @@ namespace Lab_sp
         /// <param name="width">Ширина требуемого изображения</param>
         /// <param name="height">Высота требуемого изображения</param>
         /// <returns>Изображение с измененным размером</returns>
-        public static Bitmap Resize(this Bitmap source, int width, int height)
+        public static Bitmap Resize(this Bitmap source, Size size)
         {
             Image<Bgr, Byte> captureImage = new Image<Bgr, byte>(source);
-            return captureImage.Resize(width, height, Inter.Linear).ToBitmap();
+            return captureImage.Resize(size.Width, size.Height, Inter.Linear).ToBitmap();
         }
 
         /// <summary>
@@ -95,11 +95,11 @@ namespace Lab_sp
         /// <param name="image">Изображение</param>
         /// <param name="size">Размер выходного файла</param>
         /// <returns>Изображение с заданным размером</returns>
-        public static Bitmap CreateBitmap(Image image, int size)
+        public static Bitmap CreateBitmap(Image image, Size size)
         {
             Bitmap bmp = new Bitmap(image);
-            if (bmp.Height != size || bmp.Width != size)
-                bmp = bmp.Resize(size, size);
+            if (bmp.Height != size.Height || bmp.Width != size.Width)
+                bmp = bmp.Resize(size);
             return bmp;
         }
 
@@ -109,11 +109,11 @@ namespace Lab_sp
         /// <param name="path">Путь к изображению</param>
         /// <param name="size">Размер выходного файла</param>
         /// <returns>Изображение с заданным размером</returns>
-        public static Bitmap CreateBitmap(string path, int size)
+        public static Bitmap CreateBitmap(string path, Size size)
         {
             Bitmap bmp = new Bitmap(path);
-            if (bmp.Height != size || bmp.Width != size)
-                bmp = bmp.Resize(size, size);
+            if (bmp.Height != size.Height || bmp.Width != size.Width)
+                bmp = bmp.Resize(size);
             return bmp;
         }
 
@@ -156,10 +156,31 @@ namespace Lab_sp
         /// <param name="rectangle"></param>
         /// <param name="size"></param>
         /// <returns></returns>
-        public static byte[] GetData(this Bitmap bmp)
+        public static double[] GetData(this Bitmap bmp)
         {
             Image<Bgr, byte> image = new Image<Bgr, byte>(bmp);
-            return image.Mat.GetData();
+            return GetRGB(image.Mat.GetData());
+        }
+
+        /// <summary>
+        /// Перевод массива byte[] -> double[] с преобразованием 
+        /// представления цвета одним числом
+        /// </summary>
+        /// <param name="bytes">Массив для конвектирования</param>
+        /// <returns>Конвектированный массив</returns>
+
+        public static double[] GetRGB(byte[] bytes)
+        {
+            double[] doubles = new double[bytes.Length / 3];
+            for (int i = 0; i < doubles.Length; i++)
+            {
+                byte red = bytes[3 * i + 1];
+                byte green = bytes[3 * i + 2];
+                byte blue = bytes[3 * i];
+                int color = (red << 16) | (green << 8) | blue;
+                doubles[i] = color;
+            }
+            return doubles;
         }
 
         /// <summary>
@@ -179,8 +200,7 @@ namespace Lab_sp
         }
 
         /// <summary>
-        /// Перевод массива byte[] -> double[] с преобразованием 
-        /// представления цвета одним числом
+        /// Перевод массива byte[] -> double[]
         /// </summary>
         /// <param name="bytes">Массив для конвектирования</param>
         /// <returns>Конвектированный массив</returns>
@@ -195,6 +215,22 @@ namespace Lab_sp
                 doubles[i] = (bytes[i] == 0) ? 0 : 1;
             }
             return doubles;
+        }
+
+        /// <summary>
+        /// Получает масштабированный прямоугольник, вырезанных из изображения
+        /// пикселей входящих в облать заданного прямоугольника изображения
+        /// </summary>
+        /// <param name="image">изображение</param>
+        /// <param name="rectangle">рассматриваемая область изображения</param>
+        /// <param name="size">размер для ресайза</param>
+        /// <returns>масштабированный прямоугольник</returns>
+        public static Bitmap ResizedRectangle(Mat image, Rectangle rectangle, Size size)
+        {
+            Mat objectFromFrame = new Mat(image, rectangle);
+            Mat resizeObject = new Mat();
+            CvInvoke.Resize(objectFromFrame, resizeObject, size);
+            return resizeObject.Bitmap;
         }
 
         /// <summary>
